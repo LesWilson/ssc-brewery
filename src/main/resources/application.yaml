@@ -28,10 +28,10 @@ spring:
     jpa:
       repositories:
         bootstrap-mode: default
-  security:
-    user:
-      name: admin
-      password: test
+#  security:
+#    user:
+#      name: admin
+#      password: test
 
 server:
   port: 8080

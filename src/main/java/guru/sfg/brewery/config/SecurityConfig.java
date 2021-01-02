@@ -1,12 +1,13 @@
 package guru.sfg.brewery.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
 @EnableWebSecurity
@@ -29,5 +30,45 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .httpBasic();
 
+    }
+
+//    @Override
+//    @Bean
+//    protected UserDetailsService userDetailsService() {
+//        UserDetails admin = User.withDefaultPasswordEncoder()
+//            .username("admin")
+//            .password("test")
+//            .roles("ADMIN")
+//            .build();
+//        UserDetails user = User.withDefaultPasswordEncoder()
+//            .username("user")
+//            .password("password")
+//            .roles("USER")
+//            .build();
+//
+//        return new InMemoryUserDetailsManager(admin, user);
+//    }
+
+
+    @Override
+    /*
+      This method achieves same as previous commented out method
+      but uses fluent API
+     */
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+            .inMemoryAuthentication()
+            .passwordEncoder(NoOpPasswordEncoder.getInstance())
+            .withUser("admin")
+            .password("test")  // add {noop} in front of password if not configuring encode above
+            .roles("ADMIN")
+            .and()
+            .withUser("user")
+            .password("password")
+            .roles("USER")
+            .and()
+            .withUser("scott")
+            .password("tiger")
+            .roles("CUSTOMER");
     }
 }
