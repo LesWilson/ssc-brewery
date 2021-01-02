@@ -14,13 +14,30 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-spring.application.name=brewery-monolith
-spring.jackson.serialization.write-dates-as-timestamps=false
-spring.jackson.serialization.write-date-timestamps-as-nanoseconds=true
-server.port=8080
-spring.messages.basename=messages/messages
-
-logging.level.guru=debug
-
+spring:
+  application:
+    name: brewery-monolith
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      write-date-timestamps-as-nanoseconds: true
+  messages:
+    basename: messages/messages
 # Spring Data hangs when not set under Spring Boot 2.3.0
-spring.data.jpa.repositories.bootstrap-mode=default
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: default
+  security:
+    user:
+      name: admin
+      password: test
+
+server:
+  port: 8080
+
+logging:
+  level:
+    guru: debug
+
+

@@ -42,13 +42,13 @@ public class CustomerController {
     private final CustomerRepository customerRepository;
 
     @RequestMapping("/find")
-    public String findCustomers(Model model){
+    public String findCustomers(Model model) {
         model.addAttribute("customer", Customer.builder().build());
         return "customers/findCustomers";
     }
 
     @GetMapping
-    public String processFindFormReturnMany(Customer customer, BindingResult result, Model model){
+    public String processFindFormReturnMany(Customer customer, BindingResult result, Model model) {
         // find customers by name
         //ToDO: Add Service
         List<Customer> customers = customerRepository.findAllByCustomerNameLike("%" + customer.getCustomerName() + "%");
@@ -67,7 +67,7 @@ public class CustomerController {
         }
     }
 
-   @GetMapping("/{customerId}")
+    @GetMapping("/{customerId}")
     public ModelAndView showCustomer(@PathVariable UUID customerId) {
         ModelAndView mav = new ModelAndView("customers/customerDetails");
         //ToDO: Add Service
@@ -85,19 +85,19 @@ public class CustomerController {
     public String processCreationForm(Customer customer) {
         //ToDO: Add Service
         Customer newCustomer = Customer.builder()
-                .customerName(customer.getCustomerName())
-                .build();
+            .customerName(customer.getCustomerName())
+            .build();
 
-        Customer savedCustomer= customerRepository.save(newCustomer);
+        Customer savedCustomer = customerRepository.save(newCustomer);
         return "redirect:/customers/" + savedCustomer.getId();
     }
 
     @GetMapping("/{customerId}/edit")
-   public String initUpdateCustomerForm(@PathVariable UUID customerId, Model model) {
-       if(customerRepository.findById(customerId).isPresent())
-          model.addAttribute("customer", customerRepository.findById(customerId).get());
-       return "customers/createOrUpdateCustomer";
-   }
+    public String initUpdateCustomerForm(@PathVariable UUID customerId, Model model) {
+        if (customerRepository.findById(customerId).isPresent())
+            model.addAttribute("customer", customerRepository.findById(customerId).get());
+        return "customers/createOrUpdateCustomer";
+    }
 
     @PostMapping("/{beerId}/edit")
     public String processUpdationForm(@Valid Customer customer, BindingResult result) {
@@ -105,7 +105,7 @@ public class CustomerController {
             return "beers/createOrUpdateCustomer";
         } else {
             //ToDO: Add Service
-            Customer savedCustomer =  customerRepository.save(customer);
+            Customer savedCustomer = customerRepository.save(customer);
             return "redirect:/customers/" + savedCustomer.getId();
         }
     }
