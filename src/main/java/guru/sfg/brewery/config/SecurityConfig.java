@@ -1,11 +1,13 @@
 package guru.sfg.brewery.config;
 
+import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.springframework.http.HttpMethod.GET;
 
@@ -49,6 +51,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        return new InMemoryUserDetailsManager(admin, user);
 //    }
 
+    @Bean
+    PasswordEncoder passwordEncoder() {
+//        return NoOpPasswordEncoder.getInstance();
+//        return new LdapShaPasswordEncoder();
+//        return new StandardPasswordEncoder();
+//        return new BCryptPasswordEncoder();
+        // Enables use of multiple encoders
+//        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        // Enables use of multiple encoders
+        return SfgPasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
     @Override
     /*
@@ -58,17 +71,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
             .inMemoryAuthentication()
-            .passwordEncoder(NoOpPasswordEncoder.getInstance())
             .withUser("admin")
-            .password("test")  // add {noop} in front of password if not configuring encode above
+            .password("{bcrypt}$2a$10$lRM4npUeTSyUyhndRHY.TO23kpMbcbLC06R39Icx8B8Vj8SsCST1e")  // bcrypt of test
+//            .password("44fcc154d52ef4a45637eb05e607889aee9aba5e0975152e85d2075aa52a0fdf16da37849240294f")  // sha256 of test
+//            .password("test")  // add {noop} in front of password if not configuring encoder
             .roles("ADMIN")
             .and()
             .withUser("user")
-            .password("password")
+            .password("{ldap}{SSHA}42rKfSk8zc64/H6pVCIGs1k1rwoeTH2AR5q9iA==")
             .roles("USER")
             .and()
             .withUser("scott")
-            .password("tiger")
+//            .password("$2a$10$1a9/7xF7tOS9EieYyMXm6uGXsW3zaL5hPEy66fi1gDwW5BeYRO0ii")  // bcrypt of tiger
+            .password("{bcrypt15}$2a$15$Zk7XOSTpNNfFlCt8buLjcO3knnoPX5efdAlJxafLXtmZ0CrPaeOzi")  // bcrypt15 of tiger
+//            .password("{sha256}53b75dd6691244eb5bbacc6295ec9097039d220dc607bdc1eaf59b7bb147e998e69b546d7d955b94")  // sha256 of tiger
+//            .password("tiger")
             .roles("CUSTOMER");
     }
 }
