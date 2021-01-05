@@ -39,5 +39,6 @@ server:
 logging:
   level:
     guru: debug
+    org.springframework.security: debug
 
 

@@ -1,21 +1,39 @@
 package guru.sfg.brewery.config;
 
+import guru.sfg.brewery.security.RestHeaderAuthFilter;
 import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    public RestHeaderAuthFilter restHeaderAuthFilter(AuthenticationManager authenticationManager) {
+        RestHeaderAuthFilter filter = new RestHeaderAuthFilter(new AntPathRequestMatcher("/api/**"));
+        filter.setAuthenticationManager(authenticationManager);
+        return filter;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http
+            .addFilterBefore(
+                restHeaderAuthFilter(authenticationManager()),
+                UsernamePasswordAuthenticationFilter.class)
+            .csrf().disable();
+
         http
             .authorizeRequests(auth ->
                 auth
@@ -83,8 +101,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .withUser("scott")
 //            .password("$2a$10$1a9/7xF7tOS9EieYyMXm6uGXsW3zaL5hPEy66fi1gDwW5BeYRO0ii")  // bcrypt of tiger
-            .password("{bcrypt15}$2a$15$Zk7XOSTpNNfFlCt8buLjcO3knnoPX5efdAlJxafLXtmZ0CrPaeOzi")  // bcrypt15 of tiger
-//            .password("{sha256}53b75dd6691244eb5bbacc6295ec9097039d220dc607bdc1eaf59b7bb147e998e69b546d7d955b94")  // sha256 of tiger
+//            .password("{bcrypt15}$2a$15$Zk7XOSTpNNfFlCt8buLjcO3knnoPX5efdAlJxafLXtmZ0CrPaeOzi")  // bcrypt15 of tiger
+            .password("{sha256}53b75dd6691244eb5bbacc6295ec9097039d220dc607bdc1eaf59b7bb147e998e69b546d7d955b94")  // sha256 of tiger
 //            .password("tiger")
             .roles("CUSTOMER");
     }

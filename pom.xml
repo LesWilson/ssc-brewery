@@ -70,6 +70,7 @@
         <webjars-jquery-ui.version>1.12.1</webjars-jquery-ui.version>
         <webjars-jquery.version>2.2.4</webjars-jquery.version>
         <wro4j.version>1.8.0</wro4j.version>
+        <commons-lang3.version>3.11</commons-lang3.version>
     </properties>
 
     <dependencies>
@@ -137,6 +138,12 @@
             <version>${webjars-bootstrap.version}</version>
         </dependency>
         <!-- end of webjars -->
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

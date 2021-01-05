@@ -6,9 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class BeerRestControllerIT extends BaseIT {
 
@@ -39,6 +40,34 @@ class BeerRestControllerIT extends BaseIT {
     }
 
     @Test
-    void deleteBeer() {
+    void deleteBeer() throws Exception {
+        mockMvc.perform(
+            delete("/api/v1/beer/"+ UUID.randomUUID())
+                .header("Api-Key", "admin")
+                .header("Api-Secret", "test"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteBeerBadCreds() throws Exception {
+        mockMvc.perform(
+            delete("/api/v1/beer/"+ UUID.randomUUID())
+                .header("Api-Key", "spring")
+                .header("Api-Secret", "guru"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deleteBeerHttpBasic() throws Exception {
+        mockMvc.perform(
+            delete("/api/v1/beer/"+ UUID.randomUUID())
+                .with(httpBasic("admin", "test")))
+            .andExpect(status().is2xxSuccessful());
+    }
+    @Test
+    void deleteBeerNoAuth() throws Exception {
+        mockMvc.perform(
+            delete("/api/v1/beer/"+ UUID.randomUUID()))
+            .andExpect(status().isUnauthorized());
     }
 }
