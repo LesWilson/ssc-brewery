@@ -70,4 +70,13 @@ class BeerRestControllerIT extends BaseIT {
             delete("/api/v1/beer/"+ UUID.randomUUID()))
             .andExpect(status().isUnauthorized());
     }
+    @Test
+    void deleteBeerWithUrlParameters() throws Exception {
+        mockMvc.perform(
+            delete("/api/v1/beer/"+ UUID.randomUUID())
+                .param("Api-Key", "admin")
+                .param("Api-Secret", "test"))
+            .andExpect(status().isOk());
+    }
+
 }

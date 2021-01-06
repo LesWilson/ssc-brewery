@@ -6,15 +6,16 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
-public class RestHeaderAuthFilter extends CustomAuthFilterBase {
+public class UrlParametersAuthFilter extends CustomAuthFilterBase {
 
-    public RestHeaderAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
+    public UrlParametersAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
         super(requiresAuthenticationRequestMatcher);
     }
+
     protected String getUserName(HttpServletRequest request) {
-        return request.getHeader("Api-Key");
+        return request.getParameter("Api-Key");
     }
     protected String getPassword(HttpServletRequest request) {
-        return request.getHeader("Api-Secret");
+        return request.getParameter("Api-Secret");
     }
 }
