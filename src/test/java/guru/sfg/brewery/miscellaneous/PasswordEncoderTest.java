@@ -28,13 +28,9 @@ public class PasswordEncoderTest {
     void bcrypt15Example() {
         String scottsPassword = "tiger";
         PasswordEncoder encoder = new BCryptPasswordEncoder(15);
-        System.out.println(encoder.encode(scottsPassword));
-        System.out.println(encoder.encode(scottsPassword));
 
         String encodedPassword = encoder.encode(scottsPassword);
-        System.out.println("encoded");
         assertThat(encoder.matches(scottsPassword, encodedPassword), is(true));
-        System.out.println("matched");
     }
     @Test
     void sha256Example() {
