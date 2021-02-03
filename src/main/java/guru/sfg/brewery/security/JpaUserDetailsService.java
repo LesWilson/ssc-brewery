@@ -45,7 +45,7 @@ public class JpaUserDetailsService implements UserDetailsService {
         return isNotEmpty(authorities) ?
             authorities
                 .stream()
-                .map(Authority::getRole)
+                .map(Authority::getAuthority)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList())
             : new ArrayList<>();

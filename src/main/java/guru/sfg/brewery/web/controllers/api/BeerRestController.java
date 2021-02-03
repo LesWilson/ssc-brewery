@@ -17,6 +17,10 @@
 
 package guru.sfg.brewery.web.controllers.api;
 
+import guru.sfg.brewery.security.permissions.BeerCreatePermission;
+import guru.sfg.brewery.security.permissions.BeerDeletePermission;
+import guru.sfg.brewery.security.permissions.BeerReadPermission;
+import guru.sfg.brewery.security.permissions.BeerUpdatePermission;
 import guru.sfg.brewery.services.BeerService;
 import guru.sfg.brewery.web.model.BeerDto;
 import guru.sfg.brewery.web.model.BeerPagedList;
@@ -46,6 +50,7 @@ public class BeerRestController {
 
     private final BeerService beerService;
 
+    @BeerReadPermission
     @GetMapping(produces = {"application/json"}, path = "beer")
     public ResponseEntity<BeerPagedList> listBeers(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
                                                    @RequestParam(value = "pageSize", required = false) Integer pageSize,
@@ -72,6 +77,7 @@ public class BeerRestController {
         return new ResponseEntity<>(beerList, HttpStatus.OK);
     }
 
+    @BeerReadPermission
     @GetMapping(path = {"beer/{beerId}"}, produces = {"application/json"})
     public ResponseEntity<BeerDto> getBeerById(@PathVariable("beerId") UUID beerId,
                                                @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand) {
@@ -85,12 +91,14 @@ public class BeerRestController {
         return new ResponseEntity<>(beerService.findBeerById(beerId, showInventoryOnHand), HttpStatus.OK);
     }
 
+    @BeerReadPermission
     @GetMapping(path = {"beerUpc/{upc}"}, produces = {"application/json"})
     public ResponseEntity<BeerDto> getBeerByUpc(@PathVariable("upc") String upc) {
         return new ResponseEntity<>(beerService.findBeerByUpc(upc), HttpStatus.OK);
     }
 
     @PostMapping(path = "beer")
+    @BeerCreatePermission
     public ResponseEntity saveNewBeer(@Valid @RequestBody BeerDto beerDto) {
 
         BeerDto savedDto = beerService.saveBeer(beerDto);
@@ -103,6 +111,7 @@ public class BeerRestController {
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
     }
 
+    @BeerUpdatePermission
     @PutMapping(path = {"beer/{beerId}"}, produces = {"application/json"})
     public ResponseEntity updateBeer(@PathVariable("beerId") UUID beerId, @Valid @RequestBody BeerDto beerDto) {
 
@@ -113,19 +122,22 @@ public class BeerRestController {
 
     @DeleteMapping({"beer/{beerId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @BeerDeletePermission
     public void deleteBeer(@PathVariable("beerId") UUID beerId) {
         beerService.deleteById(beerId);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ResponseEntity<List> badReqeustHandler(ConstraintViolationException e) {
+    ResponseEntity<List<String>> badRequestHandler(ConstraintViolationException e) {
         List<String> errors = new ArrayList<>(e.getConstraintViolations().size());
         log.error("returning error response");
 
-        e.getConstraintViolations().forEach(constraintViolation -> {
-            errors.add(constraintViolation.getPropertyPath().toString() + " : " + constraintViolation.getMessage());
-        });
+        e.getConstraintViolations()
+            .forEach(constraintViolation ->
+                errors.add(constraintViolation.getPropertyPath() +
+                    " : " +
+                    constraintViolation.getMessage()));
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }

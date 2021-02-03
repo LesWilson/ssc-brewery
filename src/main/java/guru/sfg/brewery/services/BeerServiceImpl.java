@@ -130,6 +130,7 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
+//    @HasRole()
     public void deleteById(UUID beerId) {
         beerRepository.deleteById(beerId);
     }

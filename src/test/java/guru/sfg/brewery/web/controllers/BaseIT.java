@@ -1,18 +1,14 @@
 package guru.sfg.brewery.web.controllers;
 
-import guru.sfg.brewery.repositories.BeerInventoryRepository;
-import guru.sfg.brewery.repositories.BeerRepository;
-import guru.sfg.brewery.repositories.CustomerRepository;
-import guru.sfg.brewery.services.BeerService;
-import guru.sfg.brewery.services.BreweryService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.stream.Stream;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
@@ -22,16 +18,6 @@ public class BaseIT {
     protected MockMvc mockMvc;
     @Autowired
     WebApplicationContext wac;
-    @MockBean
-    BeerRepository beerRepository;
-    @MockBean
-    BeerInventoryRepository beerInventoryRepository;
-    @MockBean
-    BreweryService breweryService;
-    @MockBean
-    CustomerRepository customerRepository;
-    @MockBean
-    BeerService beerService;
 
     @BeforeEach
     public void setup() {
@@ -39,6 +25,30 @@ public class BaseIT {
                 .webAppContextSetup(wac)
                 .apply(springSecurity())
                 .build();
+    }
+
+    public static Stream<Arguments> getAllUsers() {
+        return Stream.of(
+                Arguments.of("user", "password"),
+                Arguments.of("scott", "tiger"),
+                Arguments.of("admin", "test"));
+    }
+
+    public static Stream<Arguments> getAdminCustomerUsers() {
+        return Stream.of(
+            Arguments.of("scott", "tiger"),
+            Arguments.of("admin", "test"));
+    }
+
+    public static Stream<Arguments> getAdminUsers() {
+        return Stream.of(
+            Arguments.of("admin", "test"));
+    }
+
+    public static Stream<Arguments> getNonAdminUsers() {
+        return Stream.of(
+            Arguments.of("user", "password"),
+            Arguments.of("scott", "tiger"));
     }
 
 }

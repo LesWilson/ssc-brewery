@@ -29,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -41,6 +40,7 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -76,18 +76,46 @@ class BeerControllerTest {
     }
 
     @Test
-    void findBeers() throws Exception{
+    public void findBeers() throws Exception {
         mockMvc.perform(get("/beers/find"))
                 .andExpect(status().isOk())
+                .andExpect(view().name("beers/findBeers"))
+                .andExpect(model().attributeExists("beer"));
+    }
+
+    @Test
+    void findBeersWithAdmin() throws Exception{
+        mockMvc.perform(get("/beers/find")
+            .with(httpBasic("admin", "test")))
+            .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("beers/findBeers"))
                 .andExpect(model().attributeExists("beer"));
         verifyNoInteractions(beerRepository);
     }
 
-    //ToDO: Mocking Page
-     void processFindFormReturnMany() throws Exception{
-        when(beerRepository.findAllByBeerName(anyString(), PageRequest.of(0,
-              10,Sort.Direction.DESC,"beerName"))).thenReturn(pagedResponse);
+    @Test
+    void findBeersWithUser() throws Exception{
+        mockMvc.perform(get("/beers/find")
+            .with(httpBasic("user", "password")))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name("beers/findBeers"))
+            .andExpect(model().attributeExists("beer"));
+        verifyNoInteractions(beerRepository);
+    }
+
+    @Test
+    void findBeersWithCustomer() throws Exception{
+        mockMvc.perform(get("/beers/find")
+            .with(httpBasic("scott", "tiger")))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name("beers/findBeers"))
+            .andExpect(model().attributeExists("beer"));
+        verifyNoInteractions(beerRepository);
+    }
+
+    @Test
+    void processFindFormReturnMany() throws Exception{
+        when(beerRepository.findAllByBeerNameIsLike(anyString(), ArgumentMatchers.any(PageRequest.class))).thenReturn(pagedResponse);
         mockMvc.perform(get("/beers"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/beerList"))
@@ -135,7 +163,7 @@ class BeerControllerTest {
     }
 
     @Test
-    void processUpdationForm() throws Exception {
+    void processUpdateForm() throws Exception {
         when(beerRepository.save(ArgumentMatchers.any())).thenReturn(Beer.builder().id(uuid).build());
 
         mockMvc.perform(post("/beers/"+uuid+"/edit"))

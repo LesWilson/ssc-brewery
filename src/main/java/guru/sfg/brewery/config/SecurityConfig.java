@@ -3,16 +3,21 @@ package guru.sfg.brewery.config;
 import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.springframework.http.HttpMethod.GET;
-
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    public static final String ADMIN_ROLE = "ADMIN";
+    public static final String CUSTOMER_ROLE = "CUSTOMER";
+    public static final String USER_ROLE = "USER";
+    public static final String[] ALL_ROLES = new String[] {ADMIN_ROLE, USER_ROLE, CUSTOMER_ROLE};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -38,9 +43,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 auth
                     .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
                     .antMatchers("/h2-console/**", "/favicon.ico").permitAll()
-                    .antMatchers("/beers/find", "/beers").permitAll()
-                    .antMatchers(GET, "/api/v1/beer/**").permitAll()
-                    .mvcMatchers(GET, "/api/v1/beerUpc/{upc}").permitAll()
             )
             .authorizeRequests()
             .anyRequest()

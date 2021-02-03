@@ -17,10 +17,12 @@
 
 package guru.sfg.brewery.web.controllers;
 
-
 import guru.sfg.brewery.domain.Beer;
 import guru.sfg.brewery.repositories.BeerInventoryRepository;
 import guru.sfg.brewery.repositories.BeerRepository;
+import guru.sfg.brewery.security.permissions.BeerCreatePermission;
+import guru.sfg.brewery.security.permissions.BeerReadPermission;
+import guru.sfg.brewery.security.permissions.BeerUpdatePermission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +40,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
-
 @RequiredArgsConstructor
 @RequestMapping("/beers")
 @Controller
@@ -47,14 +48,15 @@ public class BeerController {
     private final BeerRepository beerRepository;
     private final BeerInventoryRepository beerInventoryRepository;
 
-
     @RequestMapping("/find")
+    @BeerReadPermission
     public String findBeers(Model model) {
         model.addAttribute("beer", Beer.builder().build());
         return "beers/findBeers";
     }
 
     @GetMapping
+    @BeerReadPermission
     public String processFindFormReturnMany(Beer beer, BindingResult result, Model model) {
         // find beers by name
         //ToDO: Add Service
@@ -76,8 +78,8 @@ public class BeerController {
         }
     }
 
-
     @GetMapping("/{beerId}")
+    @BeerReadPermission
     public ModelAndView showBeer(@PathVariable UUID beerId) {
         ModelAndView mav = new ModelAndView("beers/beerDetails");
         //ToDO: Add Service
@@ -86,12 +88,14 @@ public class BeerController {
     }
 
     @GetMapping("/new")
+    @BeerCreatePermission
     public String initCreationForm(Model model) {
         model.addAttribute("beer", Beer.builder().build());
         return "beers/createBeer";
     }
 
     @PostMapping("/new")
+    @BeerCreatePermission
     public String processCreationForm(Beer beer) {
         //ToDO: Add Service
         Beer newBeer = Beer.builder()
@@ -107,6 +111,7 @@ public class BeerController {
         return "redirect:/beers/" + savedBeer.getId();
     }
 
+    @BeerUpdatePermission
     @GetMapping("/{beerId}/edit")
     public String initUpdateBeerForm(@PathVariable UUID beerId, Model model) {
         if (beerRepository.findById(beerId).isPresent())
@@ -115,6 +120,7 @@ public class BeerController {
     }
 
     @PostMapping("/{beerId}/edit")
+    @BeerUpdatePermission
     public String processUpdateForm(@Valid Beer beer, BindingResult result) {
         if (result.hasErrors()) {
             return "beers/createOrUpdateBeer";

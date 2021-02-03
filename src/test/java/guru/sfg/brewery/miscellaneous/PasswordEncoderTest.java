@@ -1,6 +1,5 @@
 package guru.sfg.brewery.miscellaneous;
 
-import org.h2.security.SHA256;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
@@ -24,14 +23,15 @@ public class PasswordEncoderTest {
         String encodedPassword = encoder.encode(PASSWORD);
         assertThat(encoder.matches(PASSWORD, encodedPassword), is(true));
     }
-    @Test
-    void bcrypt15Example() {
-        String scottsPassword = "tiger";
-        PasswordEncoder encoder = new BCryptPasswordEncoder(15);
-
-        String encodedPassword = encoder.encode(scottsPassword);
-        assertThat(encoder.matches(scottsPassword, encodedPassword), is(true));
-    }
+// slows down unit tests
+//    @Test
+//    void bcrypt15Example() {
+//        String scottsPassword = "tiger";
+//        PasswordEncoder encoder = new BCryptPasswordEncoder(15);
+//
+//        String encodedPassword = encoder.encode(scottsPassword);
+//        assertThat(encoder.matches(scottsPassword, encodedPassword), is(true));
+//    }
     @Test
     void sha256Example() {
         PasswordEncoder encoder = new StandardPasswordEncoder();

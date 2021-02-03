@@ -14,6 +14,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @Entity
+@ToString(exclude = "roles")
 public class Authority {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -25,7 +26,8 @@ public class Authority {
     @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
     private UUID id;
 
-    private String role;
+    private String authority;
+
     @ManyToMany(mappedBy = "authorities")
-    private Set<User> users;
+    private Set<Role> roles;
 }

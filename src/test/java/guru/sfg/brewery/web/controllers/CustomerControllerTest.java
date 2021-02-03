@@ -20,7 +20,6 @@ package guru.sfg.brewery.web.controllers;
 import guru.sfg.brewery.domain.Customer;
 import guru.sfg.brewery.repositories.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -77,11 +76,10 @@ class CustomerControllerTest {
                 .andExpect(model().attributeExists("customer"));
         verifyNoInteractions(customerRepository);
     }
-//ToDO: Fix stubbing error
+
     @Test
-    @Disabled
     void processFindFormReturnMany() throws Exception{
-        when(customerRepository.findAllByCustomerNameLike("John Doe")).thenReturn(customerList);
+        when(customerRepository.findAllByCustomerNameLike(anyString())).thenReturn(customerList);
 
         mockMvc.perform(get("/customers"))
                 .andExpect(status().isOk())
